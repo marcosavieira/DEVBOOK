@@ -2,6 +2,6 @@
 
 ## Projeto de uma rede social 
 
-###BackEnd desenvolvido em goLang
+##BackEnd desenvolvido em goLang
 
-###FrontEnd em React
+##FrontEnd em React
