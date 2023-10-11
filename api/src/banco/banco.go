@@ -1,4 +1,4 @@
-package db
+package banco
 
 import (
 	"api/src/config"

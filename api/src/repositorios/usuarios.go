@@ -6,17 +6,17 @@ import (
 	"fmt"
 )
 
-//Usuarios representa um repositorio de usuarios
+//*Usuarios representa um repositorio de usuarios
 type Usuarios struct {
 	db *sql.DB
 }
 
-//NovoRepositorioDeUsuarios criar um repositorio de usuarios
+//*NovoRepositorioDeUsuarios criar um repositorio de usuarios
 func NovoRepositorioDeUsuarios(db *sql.DB) *Usuarios {
 	return &Usuarios{db}
 }
 
-//Criar insere um usuario no banco de dados
+//*Criar insere um usuario no banco de dados
 func (repositorio Usuarios) Criar(usuario models.Usuario) (uint64, error){
 	statement, erro := repositorio.db.Prepare(
 		"insert into usuarios (nome, nick, email, senha) values(?,?,?,?)",
@@ -39,7 +39,7 @@ func (repositorio Usuarios) Criar(usuario models.Usuario) (uint64, error){
 	return uint64(ultimoIDInserido), nil
 }
 
-//Buscar tras todos os usuarios que atendem um filtro de nome ou nick
+//*Buscar tras todos os usuarios que atendem um filtro de nome ou nick
 func (repositorio Usuarios) Buscar(nomeOuNick string)([]models.Usuario, error)  {
 	nomeOuNick = fmt.Sprintf("%%%s%%", nomeOuNick) //%nomeOuNick%
 
@@ -72,7 +72,7 @@ func (repositorio Usuarios) Buscar(nomeOuNick string)([]models.Usuario, error)  
 	return usuarios, nil
 }
 
-//BuscarPorID tras um usuario do banco de dados pelo ID
+//*BuscarPorID tras um usuario do banco de dados pelo ID
 func (repositorio Usuarios) BuscarPorID(ID uint64) (models.Usuario, error) {
 		linhas, erro := repositorio.db.Query(
 			"select id, nome, nick, email, criadoEm from usuarios where id = ?", ID,
@@ -99,7 +99,7 @@ func (repositorio Usuarios) BuscarPorID(ID uint64) (models.Usuario, error) {
 		return usuario, nil
 }
 
-//Atualizar atualiza um usuario no banco de dados
+//*Atualizar atualiza um usuario no banco de dados
 func (repositorio Usuarios) Atualizar(ID uint64, usuario models.Usuario) error {
 		statement, erro := repositorio.db.Prepare(
 			"update usuarios set nome = ?, nick = ?, email = ? where id = ?",
@@ -130,7 +130,7 @@ func (repositorio Usuarios) Deletar(ID uint64) error {
 	return nil
 }
 
-//BuscarPorEmail busca um usuario por email e retorna o id e senha com hash
+//*BuscarPorEmail busca um usuario por email e retorna o id e senha com hash
 func (repositorio Usuarios) BuscarPorEmail(email string)(models.Usuario, error) {
 		linha, erro := repositorio.db.Query("select id, senha from usuarios where email = ?", email)
 		if erro != nil {
@@ -148,4 +148,34 @@ func (repositorio Usuarios) BuscarPorEmail(email string)(models.Usuario, error) 
 		}
 
 		return usuario, nil
+}
+
+//*SeguirUsuario permite seguir um usuario
+func (repositorio Usuarios) Seguir(usuarioID, seguidorID uint64) error {
+	statement, erro := repositorio.db.Prepare("insert ignore into seguidores (usuario_id, seguidor_id) values(?,?)")
+    if erro!= nil {
+        return erro
+    }
+    defer statement.Close()
+
+    if _, erro = statement.Exec(usuarioID, seguidorID); erro!= nil {
+        return erro
+    }
+
+    return nil
+}
+
+//*Parar de seguir deixa de seguir um usuario
+func (repositorio Usuarios) PararDeSeguir(usuarioID, seguidorID uint64) error {
+	statement, erro := repositorio.db.Prepare("delete from seguidores where usuario_id =? and seguidor_id =?")
+    if erro!= nil {
+        return erro
+    }
+    defer statement.Close()
+
+    if _, erro = statement.Exec(usuarioID, seguidorID); erro!= nil {
+        return erro
+    }
+
+    return nil
 }

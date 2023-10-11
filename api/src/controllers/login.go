@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	db "api/src/DB"
 	models "api/src/Models"
 	"api/src/autenticacao"
+	db "api/src/banco"
 	"api/src/repositorios"
 	"api/src/respostas"
 	"api/src/security"
