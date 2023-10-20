@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/assets/css/login.css" />
+    <title>DevBook - Login</title>
+  </head>
+  <div id="container" class="container">
+    <!-- FORM SECTION -->
+    <div class="row">
+      <!-- SIGN UP -->
+      <div class="col align-items-center flex-col sign-up">
+        <div class="form-wrapper align-items-center">
+          <form class="form sign-up" id="form-sign-up">
+            <div class="input-group">
+              <i class="bx bxs-user"></i>
+              <input type="text" placeholder="Nome" id="nome" />
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-user"></i>
+              <input type="text" placeholder="NickName" id="nick" />
+            </div>
+            <div class="input-group">
+              <i class="bx bx-mail-send"></i>
+              <input type="email" placeholder="Email" id="email" />
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input type="password" placeholder="Senha" id="senha" />
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input
+                type="password"
+                placeholder="Confirme a senha"
+                id="confirmar-senha"
+              />
+            </div>
+            <button type="submit">Cadastre-se</button>
+            <p>
+              <span> Já possui uma conta? </span>
+              <b onclick="toggle()" class="pointer"> Faça o login </b>
+            </p>
+          </form>
+        </div>
+      </div>
+      <!-- END SIGN UP -->
+
+      <!-- SIGN IN -->
+      <div class="col align-items-center flex-col sign-in">
+        <div class="form-wrapper align-items-center">
+          <form
+            class="form sign-in"
+            id="form-sign-in"
+            enctype="multipart/form-data"
+          >
+            <div class="input-group">
+              <i class="bx bxs-user"></i>
+              <input type="email" placeholder="Email" id="emailS" />
+            </div>
+            <div class="input-group">
+              <i class="bx bxs-lock-alt"></i>
+              <input type="password" placeholder="Senha" id="senhaS" />
+            </div>
+            <button type="submit">Login</button>
+            <p>
+              <b> Esqueceu a senha? </b>
+            </p>
+            <p>
+              <span> Não tem uma conta? </span>
+              <b onclick="toggle()" class="pointer"> Cadastre-se </b>
+            </p>
+          </form>
+        </div>
+        <div class="form-wrapper"></div>
+      </div>
+      <!-- END SIGN IN -->
+
+      <!-- END FORM SECTION -->
+      <!-- CONTENT SECTION -->
+      <div class="row content-row">
+        <!-- SIGN IN CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="text sign-in">
+            <h2>Bem vindo ao DevBook</h2>
+          </div>
+          <div class="img sign-in"></div>
+        </div>
+        <!-- END SIGN IN CONTENT -->
+        <!-- SIGN UP CONTENT -->
+        <div class="col align-items-center flex-col">
+          <div class="img sign-up"></div>
+          <div class="text sign-up">
+            <h2>Cadastre-se</h2>
+          </div>
+        </div>
+        <!-- END SIGN UP CONTENT -->
+      </div>
+      <!-- END CONTENT SECTION -->
+    </div>
+  </div>
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/home.js"></script>
+  <script src="/assets/js/login.js"></script>
+  <script src="/assets/js/cadastro.js"></script>
+  <!-- <script src="/assets/js/cadastro.js"></script> -->
+</html>
