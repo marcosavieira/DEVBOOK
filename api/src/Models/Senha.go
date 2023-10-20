@@ -1,4 +1,4 @@
-package models
+package Models
 
 //*Senha representa um formato de senha
 type Senha struct {
