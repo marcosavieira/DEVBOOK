@@ -11,9 +11,12 @@ function fazerLogin(evento) {
     },
   })
     .done(function () {
-      window.location = "/home";
+      Swal.fire("Sucesso", "Login efetuado com sucesso!", "success")
+      .then(function () {
+        window.location = "/home";
+      })
     })
     .fail(function () {
-      alert("Falha ao realizar login");
+      Swal.fire("Ops...", "Erro ao realizar o login!", "error")
     });
 }

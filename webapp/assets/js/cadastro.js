@@ -3,7 +3,7 @@ function criarUsuario(e) {
   e.preventDefault();
 
   if ($("#senha").val() !== $("#confirmar-senha").val()) {
-    alert("As senhas não conferem");
+    Swal.fire("Ops...", "As senhas não conferem!", "error");
     return;
   }
 
@@ -18,10 +18,24 @@ function criarUsuario(e) {
     },
   })
     .done(function () {
-      alert("Usuário criado com sucesso!");
+      Swal.fire("Sucesso", "Usuário criado com sucesso!", "success")
+      .then(function () {
+        $.ajax({
+          url: "/login",
+          method: "POST",
+          data: {
+            email: $("#email").val(),
+            senha: $("#senha").val()
+          }
+        }).done(function() {
+          window.location = "/home";
+        }).fail(function() {
+          Swal.fire("Erro", "Erro ao autenticar o usuario!, tente fazer o login novamente", "error");
+          window.location = "/login"
+        })
+      })
     })
-    .fail(function (erro) {
-      console.log(erro);
-      alert("Erro ao criar usuário!");
+    .fail(function () {
+      Swal.fire("Erro", "Erro ao criar usuário!", "error");
     });
 }
