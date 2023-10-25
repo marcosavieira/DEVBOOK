@@ -18,14 +18,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func CriarUsuario(w http.ResponseWriter, r *http.Request){
+func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	corpoRequest, erro := io.ReadAll(r.Body)
 	if erro != nil {
 		respostas.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
 	}
 	var usuario models.Usuario
-	if erro = json.Unmarshal(corpoRequest, &usuario); erro != nil{
+	if erro = json.Unmarshal(corpoRequest, &usuario); erro != nil {
 		respostas.Erro(w, http.StatusBadRequest, erro)
 		return
 	}
@@ -49,7 +49,7 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request){
 	}
 	respostas.JSON(w, http.StatusCreated, usuario)
 }
-func BuscarUsuarios(w http.ResponseWriter, r *http.Request){
+func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
 	nomeOuNick := strings.ToLower(r.URL.Query().Get("usuario"))
 	db, erro := db.Conectar()
 	if erro != nil {
@@ -67,7 +67,7 @@ func BuscarUsuarios(w http.ResponseWriter, r *http.Request){
 
 	respostas.JSON(w, http.StatusOK, usuarios)
 }
-func BuscarUsuario(w http.ResponseWriter, r *http.Request){
+func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
 
 	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
@@ -92,6 +92,7 @@ func BuscarUsuario(w http.ResponseWriter, r *http.Request){
 
 	respostas.JSON(w, http.StatusOK, usuario)
 }
+
 // AtualizarUsuario altera as informações de um usuário no banco
 func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
@@ -144,7 +145,7 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	respostas.JSON(w, http.StatusNoContent, nil)
 }
-func DeletarUsuario(w http.ResponseWriter, r *http.Request){
+func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
 	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
 	if erro != nil {
@@ -153,13 +154,13 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request){
 	}
 
 	usuarioIDNoToken, erro := autenticacao.ExtrairUsuarioID(r)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusUnauthorized, erro)
-        return
-    }
+	if erro != nil {
+		respostas.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
 	if usuarioID != usuarioIDNoToken {
 		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível deletar um usuário que não seja o seu"))
-        return
+		return
 	}
 
 	db, erro := db.Conectar()
@@ -179,115 +180,128 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request){
 	respostas.JSON(w, http.StatusNoContent, nil)
 }
 
-//*SeguirUsuario permite seguir um usuario
-func SeguirUsuario(w http.ResponseWriter, r *http.Request){
+// *SeguirUsuario permite seguir um usuario
+// SeguirUsuario permite que um usuário siga outro
+func SeguirUsuario(w http.ResponseWriter, r *http.Request) {
 	seguidorID, erro := autenticacao.ExtrairUsuarioID(r)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusUnauthorized, erro)
-        return
-    }
-	parametros := mux.Vars(r)
-	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusBadRequest, erro)
-        return
-    }
-	if seguidorID == usuarioID {
-		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível seguir o mesmo usuário"))
-        return
+	if erro != nil {
+		respostas.Erro(w, http.StatusUnauthorized, erro)
+		return
 	}
 
-	db, erro := db.Conectar()
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
-	defer db.Close()
-	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
-	if erro = repositorio.Seguir(seguidorID, usuarioID); erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
-
-	respostas.JSON(w, http.StatusNoContent, nil)
-}
-
-//*Parar de seguir usuario deixa de seguir um usuario
-func PararDeSeguirUsuario(w http.ResponseWriter, r *http.Request){
-	seguidorID, erro := autenticacao.ExtrairUsuarioID(r)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusUnauthorized, erro)
-        return
-    }
 	parametros := mux.Vars(r)
 	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusBadRequest, erro)
-        return
-    }
-	if seguidorID == usuarioID {
-        respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível parar de seguir o mesmo usuário"))
-        return
-    }
-	db, erro := db.Conectar()
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
-	defer db.Close()
-	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
-	if erro = repositorio.PararDeSeguir(seguidorID, usuarioID); erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
-	respostas.JSON(w, http.StatusNoContent, nil)
-}
-
-//*BuscarSeguidores lista os seguidores de um usuario 
-func BuscarSeguidores(w http.ResponseWriter, r *http.Request) {
-	parametros := mux.Vars(r)
-	usuarioID, erro := strconv.ParseUint(parametros["usuario_id"], 10, 64)
 	if erro != nil {
 		respostas.Erro(w, http.StatusBadRequest, erro)
-        return
+		return
 	}
-	db, erro := db.Conectar()
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
+
+	if seguidorID == usuarioID {
+		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível seguir você mesmo"))
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
+	if erro = repositorio.Seguir(usuarioID, seguidorID); erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// PararDeSeguirUsuario permite que um usuário pare de seguir outro
+func PararDeSeguirUsuario(w http.ResponseWriter, r *http.Request) {
+	seguidorID, erro := autenticacao.ExtrairUsuarioID(r)
+	if erro != nil {
+		respostas.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if seguidorID == usuarioID {
+		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível parar de seguir você mesmo"))
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
+	if erro = repositorio.PararDeSeguir(usuarioID, seguidorID); erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// BuscarSeguidores traz todos os seguidores de um usuário
+func BuscarSeguidores(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
 	defer db.Close()
 
 	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
 	seguidores, erro := repositorio.BuscarSeguidores(usuarioID)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
 	respostas.JSON(w, http.StatusOK, seguidores)
 }
 
-//*BuscarSeguindo lista todos os seguidores de um usuario 
+// BuscarSeguindo traz todos os usuários que um determinado usuário está seguindo
 func BuscarSeguindo(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
-	usuarioID, erro := strconv.ParseUint(parametros["usuario_id"], 10, 64)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
 	if erro != nil {
 		respostas.Erro(w, http.StatusBadRequest, erro)
-        return
+		return
 	}
-	db, erro := db.Conectar()
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
 	defer db.Close()
 
 	repositorio := repositorios.NovoRepositorioDeUsuarios(db)
 	usuarios, erro := repositorio.BuscarSeguindo(usuarioID)
-	if erro!= nil {
-        respostas.Erro(w, http.StatusInternalServerError, erro)
-        return
-    }
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
 	respostas.JSON(w, http.StatusOK, usuarios)
 }
 
