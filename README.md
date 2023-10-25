@@ -4,4 +4,4 @@
 
 ##BackEnd desenvolvido em goLang
 
-##FrontEnd em React
+##FrontEnd em JS e GO
